@@ -10,8 +10,8 @@ def get_a_hand(lines):
     index = 0
     while index < len(lines):
         split = lines[index].split()
-        hand1 = split[0:4]
-        hand2 = split[5:9]
+        hand1 = split[0:5]
+        hand2 = split[5:10]
         yield hand1, hand2
         index += 1
 
@@ -22,14 +22,16 @@ def is_flush(suits, values):
         return False
 
 def is_straight(suits, values):
-    sorted_values = values.sort()
+    values.sort()
+      
     for i in range(4):
-        if not sorted_values[i+1] == sorted_values[i] + 1:
+        if not values[i+1] == values[i] + 1:
             break
     else:
+        print values
         return True
 
-    if sorted_values == [2, 3, 4, 5, 14]:
+    if values == [2, 3, 4, 5, 14]:
         return True
     else:
         return False
@@ -57,37 +59,38 @@ def basic_ranker(suits, values):
     if is_flush(suits, values):
         ans += 12
     if is_straight(suits, values):
+        #print 'hand is straight'
         ans += 11
 
     if 4 in occ_d: #Four of a kind
         ans = 16 + occ_d[4][0]*.1
 
-    elif 3 in occ_d: #Three of a kind
-        ans = 10 + occ_d[3][0]*.1
+    if 3 in occ_d: #Three of a kind
+        ans += 10 + occ_d[3][0]*.1
         if 2 in occ_d: #Full house
             ans += 4 
 
-    elif 2 in occ_d: #pairs
+    if 2 in occ_d: #pairs
         if len(occ_d[2]) == 2: #two pair
             higher = max(occ_d[2])
             lower = min(occ_d[2])
-            ans = 8 + higher*.1 + lower * .01
+            ans += 8 + higher*.1 + lower * .01
         else:
-            ans = 4 + occ_d[2][0]*.1
+            ans += 4 + occ_d[2][0]*.1
 
-    else: #High card
-        ans = max(occ_d[1])*.1
+    if ans == 0: #High card
+        ans += max(occ_d[1])*.1
 
     return ans
 
 def break_tie(vals1, vals2):
-    sorted1 = vals1.sort()
-    sorted2 = vals2.sort()
+    vals1.sort()
+    vals2.sort()
 
     for i in range(4, -1, -1):
-        if sorted1[i] > sorted2[i]:
+        if vals1 > vals2:
             return 1
-        elif sorted1[i] < sorted2[i]:
+        elif vals1 < vals2:
             return 2
 
 
@@ -95,12 +98,15 @@ def compare_hands(hand1, hand2):
     card_dict = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,\
                  '8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14}
 
-    suits1 = [card_dict[card[1]] for card in hand1]
+    suits1 = [card[1] for card in hand1]
     values1 = [card_dict[card[0]] for card in hand1]
-
-    suits2 = [card_dict[card[1]] for card in hand2]
+    
+    suits2 = [card[1] for card in hand2]
     values2 = [card_dict[card[0]] for card in hand2]
 
+
+    #print 'rank of hand1 ', basic_ranker(suits1,values1)
+    #print 'rank of hand2 ', basic_ranker(suits2,values2)
     if basic_ranker(suits1, values1) > basic_ranker(suits2, values2):
         return 1
     elif basic_ranker(suits1, values1) < basic_ranker(suits2, values2):
@@ -115,9 +121,13 @@ if __name__ == '__main__':
     player2 = 0
 
     for hand1, hand2 in get_a_hand(hands):
-        if compare_hands == 1:
+        #print 'hand1 ', hand1
+        #print 'hand2 ', hand2
+        compare = compare_hands(hand1,hand2)
+        #print compare
+        if compare == 1:
             player1 +=1
-        else:
+        elif compare == 2:
             player2 += 1
     print player1, player2
 
