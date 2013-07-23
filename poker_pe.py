@@ -57,29 +57,29 @@ def basic_ranker(suits, values):
     keys = occ_d.keys()
     
     if is_flush(suits, values):
-        ans += 12
+        ans += 16
     if is_straight(suits, values):
         #print 'hand is straight'
-        ans += 11
+        ans += 14
 
     if 4 in occ_d: #Four of a kind
-        ans = 16 + occ_d[4][0]*.1
+        ans = 20 + occ_d[4][0]*.01
 
     if 3 in occ_d: #Three of a kind
-        ans += 10 + occ_d[3][0]*.1
+        ans += 12 + occ_d[3][0]*.01
         if 2 in occ_d: #Full house
-            ans += 4 
+            ans += 5 
 
     if 2 in occ_d: #pairs
         if len(occ_d[2]) == 2: #two pair
             higher = max(occ_d[2])
             lower = min(occ_d[2])
-            ans += 8 + higher*.1 + lower * .01
+            ans += 10 + higher*.1 + lower * .001
         else:
-            ans += 4 + occ_d[2][0]*.1
+            ans += 5 + occ_d[2][0]*.01
 
     if ans == 0: #High card
-        ans += max(occ_d[1])*.1
+        ans += max(occ_d[1])*.01
 
     return ans
 
