@@ -65,22 +65,29 @@ def basic_ranker(suits, values):
     if 4 in occ_d: #Four of a kind
         ans = 20 + occ_d[4][0]*.01
 
-    if 3 in occ_d: #Three of a kind
+    elif 3 in occ_d: #Three of a kind
+        
         ans += 12 + occ_d[3][0]*.01
+        print 'three of a kind ', ans
         if 2 in occ_d: #Full house
+            
             ans += 5 
+            print 'full house', ans
 
-    if 2 in occ_d: #pairs
+    elif 2 in occ_d and 3 not in occ_d: #pairs
         if len(occ_d[2]) == 2: #two pair
             higher = max(occ_d[2])
             lower = min(occ_d[2])
+            print ans
+            print 'two pair', ans
             ans += 10 + higher*.1 + lower * .001
         else:
             ans += 5 + occ_d[2][0]*.01
+            print 'one pair', ans
 
-    if ans == 0: #High card
+    elif ans == 0: #High card
         ans += max(occ_d[1])*.01
-
+    print 'final ans ', ans
     return ans
 
 def break_tie(vals1, vals2):
