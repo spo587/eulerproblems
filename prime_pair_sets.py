@@ -18,8 +18,8 @@ def makeprimes(n):
       i += 1
       continue
 
-    maxMultiple = int(math.ceil(float(n)/i))
-    for j in range(2, maxMultiple):
+    max_multiple = int(math.ceil(float(n)/i))
+    for j in range(2, max_multiple):
       list1[i*j] = 0    ## all the multiples of the current i get set to zero 
     i += 1
 
@@ -30,8 +30,22 @@ def makeprimes(n):
           listprimes+=[i,]
   return listprimes
 
+def makeprimedict_reversed(listprimes):
+  d = {}
+  for i in range(len(listprimes)):
+    d[listprimes[i]] = i
+  return d
 
-listprimes = makeprimes(10000000)
+
+
+def makeprimedict(listprimes):
+  d = {}
+  for i in range(len(listprimes)):
+    d[i] = listprimes[i]
+  return d
+
+listprimes = makeprimes(20000000)
+
 def prime(n):
   return listprimes[n-1]
 
@@ -42,64 +56,55 @@ def make_perms_of_two(*strings):
   x = it.permutations(makelist(*strings),2)
   return [int(elem[0]+elem[1]) for elem in x] 
 
-def check_list_for_all_primes(l):
+def check_list_for_all_primes(l,d):
   result = 0
   for item in l:
-    if item in listprimes:
+    if d.get(item):
       result += 1
+      
   return result == len(l)
 
 
-def findpairsets(ceiling,toprint=False):
-  listprimes = makeprimes(ceiling)
-  i = 1
-  while i < len(listprimes) - 10:
-    j = i + 1
-    a = str(listprimes[i])
-    while j < len(listprimes) - 9:
-      k = j + 1
-      b = str(listprimes[j])
-      if toprint:
-        print 'trying ', a,b
-      if not check_list_for_all_primes(make_perms_of_two(a,b)):
-        j += 1
-        if j == len(listprimes) - 9:
-          i += 1
-        continue
-      while k < len(listprimes) - 8:
-        m = k + 1
-        c = str(listprimes[k])
-        if toprint:
-          print 'trying ', a,b,c
-        if not check_list_for_all_primes(make_perms_of_two(a,b,c)):
-          k += 1
-          if k == len(listprimes) - 8:
-            j += 1
-          continue
-        while m < len(listprimes) - 7:
-          n = m + 1
-          d = str(listprimes[m])
-          if toprint:
-            print 'trying ', a,b,c,d
-          if not check_list_for_all_primes(make_perms_of_two(a,b,c,d)):
-            m += 1
-            if m == len(listprimes) - 7:
-              k += 1
-            continue
-          while n < len(listprimes) - 6:
-            e = str(listprimes[n])
-            if toprint:
-              print 'trying ', a,b,c,d,e
-            if check_list_for_all_primes(make_perms_of_two(a,b,c,d,e)):
-              return sum([int(a),int(b),int(c),int(d),int(e)])
-            else:
-              n += 1
-              if n == len(listprimes) - 6:
-                m += 1
+      
 
-            
+def find_with_for_loops(ceiling,toprint=False):
+  i = 1
+  reverse_dict = makeprimedict_reversed(listprimes)
+  primedict = makeprimedict(listprimes)
+  t = 0
+  newprimelist = listprimes[:ceiling]
+
+  
+
+  for prime1 in newprimelist[1:]:
+    for prime2 in newprimelist[listprimes.index(prime1):]:
+      if toprint:
+        print 'trying ', prime1, prime2
+      if check_list_for_all_primes(make_perms_of_two(str(prime1),str(prime2)),reverse_dict):
+        for prime3 in newprimelist[listprimes.index(prime2):]:
+          if toprint:
+            print 'trying ', prime1, prime2,prime3
+          if check_list_for_all_primes(make_perms_of_two(str(prime1),str(prime2),str(prime3)),reverse_dict):
+            for prime4 in newprimelist[listprimes.index(prime3):]:
+              if toprint:
+                print 'trying ', prime1, prime2,prime3,prime4
+              if check_list_for_all_primes(make_perms_of_two(str(prime1),str(prime2),str(prime3),str(prime4)),reverse_dict):
+                for prime5 in newprimelist[listprimes.index(prime4):]:
+                  if toprint:
+                    print 'trying ', prime1, prime2,prime3,prime4,prime5
+                  if check_list_for_all_primes(make_perms_of_two(str(prime1),str(prime2),str(prime3),str(prime4),str(prime5)),reverse_dict):
+                    return sum([prime1,prime2,prime3,prime4,prime5])
+
+
+
 if __name__ == '__main__':
-  print findpairsets(10000, toprint=True)
+  print find_with_for_loops(300,toprint=True)
+  # d1 = makeprimedict(listprimes)
+  # d2 = makeprimedict_reversed(listprimes)
+  # print d1[11]
+  # print d2[37]
+  
+  
 
 
 
